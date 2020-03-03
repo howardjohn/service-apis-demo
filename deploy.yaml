@@ -35,7 +35,8 @@ spec:
       serviceAccountName: istio
       containers:
       - name: istio
-        image: gcr.io/howardjohn-istio/pilot:gateway
+        # Pinned to latest verified version, as this is changing rapidly
+        image: gcr.io/istio-testing/pilot:1.6-alpha.880a8ff5bceba6ae5f4f86a5adf137a91ae7265a
         imagePullPolicy: Always
         args:
         - discovery
@@ -43,7 +44,7 @@ spec:
         - name: PILOT_ENABLED_SERVICE_APIS
           value: "true"  # This will be enabled by default in th future
       - name: proxy
-        image: gcr.io/howardjohn-istio/proxyv2:gateway
+        image: gcr.io/istio-testing/proxyv2:1.6-alpha.880a8ff5bceba6ae5f4f86a5adf137a91ae7265a
         args:
         - proxy
         - router
