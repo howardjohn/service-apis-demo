@@ -1,0 +1,14 @@
+bases:
+# Kubernetes API CRDs. These will not be installed by Istio
+- github.com/kubernetes-sigs/service-apis/config/crd
+resources:
+# Minimal Istio deployment to handle
+- deploy.yaml
+
+# Example application to use as the backend for testing
+- httpbin.yaml
+
+# Example CRD set up, allowing us to call `/get -H "Host: my.domain.example` to call httpbin
+- example.yaml
+
+namespace: istio-system
