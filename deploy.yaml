@@ -31,20 +31,21 @@ spec:
     metadata:
       labels:
         app: istio
+        istio: ingressgateway
     spec:
       serviceAccountName: istio
       containers:
       - name: istio
         # Pinned to latest verified version, as this is changing rapidly
-        image: gcr.io/istio-testing/pilot:1.6-alpha.880a8ff5bceba6ae5f4f86a5adf137a91ae7265a
+        image: gcr.io/istio-testing/pilot:1.6-alpha.f7a7fbaecbecb6db6d1e224dd781f5e6c29c70a7
         imagePullPolicy: Always
         args:
         - discovery
         env:
         - name: PILOT_ENABLED_SERVICE_APIS
-          value: "true"  # This will be enabled by default in th future
+          value: "true"  # This will be enabled by default in the future
       - name: proxy
-        image: gcr.io/istio-testing/proxyv2:1.6-alpha.880a8ff5bceba6ae5f4f86a5adf137a91ae7265a
+        image: gcr.io/istio-testing/proxyv2:1.6-alpha.f7a7fbaecbecb6db6d1e224dd781f5e6c29c70a7
         args:
         - proxy
         - router
@@ -53,10 +54,27 @@ spec:
           value: |-
             defaultConfig:
               discoveryAddress: localhost:15010
+        - name: CA_ADDR
+          value: localhost:15010
+        - name: ISTIO_META_CLUSTER_ID
+          value: Kubernetes
         - name: ISTIO_META_CONFIG_NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+        volumeMounts:
+        - mountPath: /etc/istio/pod
+          name: podinfo
+      volumes:
+      - downwardAPI:
+          items:
+          - fieldRef:
+              fieldPath: metadata.labels
+            path: labels
+          - fieldRef:
+              fieldPath: metadata.annotations
+            path: annotations
+        name: podinfo
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -78,9 +96,12 @@ rules:
   verbs: ["create", "update", "get", "list", "watch"]
 - apiGroups: ["networking.x.k8s.io"]
   resources: ["*"]
-  verbs: ["*"]
-- apiGroups: ["networking.x.k8s.io"]
-  resources: ["*"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses/status"]
   verbs: ["*"]
 # Pilot will try to read these even if they aren't existing. For now, just give access.
 - apiGroups:

@@ -1,7 +1,7 @@
 bases:
 # Kubernetes API CRDs. These will not be installed by Istio
 # Pinned to the latest tested version; the API is not yet stable so Istio support may drift
-- github.com/kubernetes-sigs/service-apis/config/crd?ref=4cf2742b89001971d4c87768ccd2b18320da1906
+- github.com/kubernetes-sigs/service-apis/config/crd?ref=b9010cfacdbeddd45d8aba22f7eeb9ffc341f930
 
 resources:
 # Minimal Istio deployment to handle
@@ -10,7 +10,10 @@ resources:
 # Example application to use as the backend for testing
 - httpbin.yaml
 
-# Example CRD set up, allowing us to call `/get -H "Host: my.domain.example` to call httpbin
+# Example CRD set up, allowing us to call `/get -H "Host: gateway.local` to call httpbin
 - example.yaml
+
+# Example of an Ingress, allowing us to call`/get -H "Host: ingress.local` to call httpbin
+- example-ingress.yaml
 
 namespace: istio-system

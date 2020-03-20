@@ -11,12 +11,12 @@ metadata:
   name: gateway
   namespace: istio-system
 spec:
-  class: gatewayclass
+  class: istio
   listeners:
   - name: primary
     address:
       type: NamedAddress
-      value: my.domain.example
+      value: gateway.local
     port: 80
     protocol: http
   routes:
@@ -32,7 +32,7 @@ metadata:
   namespace: istio-system
 spec:
   hosts:
-  - hostname: "my.domain.example"
+  - hostname: gateway.local
     rules:
     - match:
         pathType: Prefix
