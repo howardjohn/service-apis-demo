@@ -37,7 +37,7 @@ spec:
       containers:
       - name: istio
         # Pinned to latest verified version, as this is changing rapidly
-        image: gcr.io/istio-testing/pilot:1.6-alpha.f7a7fbaecbecb6db6d1e224dd781f5e6c29c70a7
+        image: gcr.io/istio-testing/pilot:1.6-alpha.96bd6b5ffb5b6949323f327185f159175ff438fc
         imagePullPolicy: Always
         args:
         - discovery
@@ -45,7 +45,7 @@ spec:
         - name: PILOT_ENABLED_SERVICE_APIS
           value: "true"  # This will be enabled by default in the future
       - name: proxy
-        image: gcr.io/istio-testing/proxyv2:1.6-alpha.f7a7fbaecbecb6db6d1e224dd781f5e6c29c70a7
+        image: gcr.io/istio-testing/proxyv2:1.6-alpha.96bd6b5ffb5b6949323f327185f159175ff438fc
         args:
         - proxy
         - router
