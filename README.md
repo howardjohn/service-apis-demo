@@ -9,6 +9,8 @@ An Ingress is also setup with similar routing rules.
 ## Use
 
 ```
+# Install Kubernetes API CRDs. These will not be installed by Istio
+kubectl apply -k github.com/kubernetes-sigs/service-apis/config/crd?ref=b9010cfacdbeddd45d8aba22f7eeb9ffc341f930
 kubectl apply -k github.com/howardjohn/service-apis-demo
 kubectl wait --for=condition=Available deployment --all --timeout=120s -n istio-system
 ```

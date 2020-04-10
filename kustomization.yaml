@@ -1,8 +1,3 @@
-bases:
-# Kubernetes API CRDs. These will not be installed by Istio
-# Pinned to the latest tested version; the API is not yet stable so Istio support may drift
-- github.com/kubernetes-sigs/service-apis/config/crd?ref=b9010cfacdbeddd45d8aba22f7eeb9ffc341f930
-
 resources:
 # Minimal Istio deployment to handle
 - deploy.yaml
