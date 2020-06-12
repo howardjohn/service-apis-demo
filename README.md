@@ -11,11 +11,13 @@ An Ingress is also setup with similar routing rules.
 ```shell
 # Install Kubernetes API CRDs. These will not be installed by Istio
 kubectl apply -k 'github.com/kubernetes-sigs/service-apis/config/crd?ref=c8dc1033d3100839c102870dd8df559b89d5516f'
+# Deploy Istio
 kubectl apply -k 'github.com/howardjohn/service-apis-demo'
+# Wait for things to get started
 kubectl wait --for=condition=Available deployment --all --timeout=120s -n istio-system
 ```
 
-Setup variables:
+### Setup variables
 
 LoadBalancer
 ```shell
@@ -37,6 +39,7 @@ This deploys a single deployment and Service, with a simple route exposing it ov
 
 ```shell
 kubectl apply -k 'github.com/howardjohn/service-apis-demo/httpbin'
+kubectl wait --for=condition=Available deployment --all --timeout=120s -n service-apis-demo
 ```
 
 Send a request:
@@ -55,7 +58,9 @@ curl http://$INGRESS_HOST:$INGRESS_PORT/get -H "Host: ingress.local"
 This deploys a single deployment and Service, with a simple route exposing it over HTTP and HTTPS. A demo self signed certificate is provided.
 
 ```shell
-kubectl apply -k 'github.com/howardjohn/service-apis-demo/httpbin'
+kubectl apply -k 'github.com/howardjohn/service-apis-demo/split'
+kubectl wait --for=condition=Available deployment --all --timeout=120s -n team1
+kubectl wait --for=condition=Available deployment --all --timeout=120s -n team2
 ```
 
 Send a request:
