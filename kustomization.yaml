@@ -5,6 +5,9 @@ resources:
 # Example application to use as the backend for testing
 - httpbin.yaml
 
+# Test certificate
+- certificate.yaml
+
 # Example CRD set up, allowing us to call `/get -H "Host: gateway.local` to call httpbin
 - example.yaml
 

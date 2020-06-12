@@ -18,15 +18,22 @@ kubectl wait --for=condition=Available deployment --all --timeout=120s -n istio-
 Send a request (LoadBalancer):
 ```shell
 export INGRESS_HOST=$(kubectl -n istio-system get service istio -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-export INGRESS_PORT=$(kubectl -n istio-system get service istio -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
-curl $INGRESS_HOST:$INGRESS_PORT/get -H "Host: gateway.local"
-curl $INGRESS_HOST:$INGRESS_PORT/get -H "Host: ingress.local"
+export INGRESS_PORT=$(kubectl -n istio-system get service istio -o jsonpath='{.spec.ports[?(@.name=="http")].port}')
+export INGRESS_PORT_HTTPS=$(kubectl -n istio-system get service istio -o jsonpath='{.spec.ports[?(@.name=="https")].port}')
+
+curl http://$INGRESS_HOST:$INGRESS_PORT/get -H "Host: gateway.local"
+curl --resolve gateway.local:$INGRESS_PORT_HTTPS:$INGRESS_HOST https://gateway.local:$INGRESS_PORT_HTTPS/get -k
+
+curl http://$INGRESS_HOST:$INGRESS_PORT/get -H "Host: ingress.local"
 ```
 
 Send a request (NodePort):
 ```shell
 export INGRESS_HOST=$(kubectl -n istio-system get pod -lapp=istio -o jsonpath='{.items[0].status.hostIP}')
-export INGRESS_PORT=$(kubectl -n istio-system get svc istio -ojsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
-curl $INGRESS_HOST:$INGRESS_PORT/get -H "Host: gateway.local"
-curl $INGRESS_HOST:$INGRESS_PORT/get -H "Host: ingress.local"
+export INGRESS_PORT=$(kubectl -n istio-system get svc istio -ojsonpath='{.spec.ports[?(@.name=="http")].nodePort}')
+export INGRESS_PORT_HTTPS=$(kubectl -n istio-system get svc istio -ojsonpath='{.spec.ports[?(@.name=="https")].nodePort}')
+curl http://$INGRESS_HOST:$INGRESS_PORT/get -H "Host: gateway.local"
+curl --resolve gateway.local:$INGRESS_PORT_HTTPS:$INGRESS_HOST https://gateway.local:$INGRESS_PORT_HTTPS/get -k
+
+curl http://$INGRESS_HOST:$INGRESS_PORT/get -H "Host: ingress.local"
 ```

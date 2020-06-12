@@ -23,6 +23,23 @@ spec:
       routeSelector:
         matchLabels:
           istio.io/gateway: gateway
+  - hostname:
+      match: Exact
+      name: gateway.local
+    port: 443
+    protocol: HTTPS
+    routes:
+      namespaceSelector: {}
+      routeSelector:
+        matchLabels:
+          istio.io/gateway: gateway
+    tls:
+      certificateRefs:
+      - name: service-apis-cert
+        # TODO bug in service-apis CRD requires empty string here
+        group: ""
+        resource: ""
+      options: {}
 ---
 apiVersion: networking.x-k8s.io/v1alpha1
 kind: HTTPRoute
@@ -45,6 +62,7 @@ spec:
           remove: [my-removed-header]
       action:
         forwardTo:
+          targetPort: 80
           targetRef:
             name: httpbin
             group: ""
