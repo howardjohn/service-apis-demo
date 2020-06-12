@@ -1,7 +1,4 @@
 resources:
-# Minimal Istio deployment to handle
-- deploy.yaml
-
 # Example application to use as the backend for testing
 - httpbin.yaml
 

@@ -1,0 +1,4 @@
+resources:
+# Example application to use as the backend for testing
+- deploy.yaml
+- config.yaml

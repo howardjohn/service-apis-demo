@@ -1,0 +1,135 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team1
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zoneprinter-v1
+  namespace: team1
+spec:
+  selector:
+    matchLabels:
+      app: zoneprinter
+      team: team1
+      version: v1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: zoneprinter
+        team: team1
+        version: v1
+    spec:
+      containers:
+      - name: frontend
+        image: gcr.io/rramkumar-gke-dev/gcp-zoneprinter-amd64:0.2
+        args:
+        - --version=team1-v1
+        ports:
+        - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zoneprinter-v2
+  namespace: team1
+spec:
+  selector:
+    matchLabels:
+        app: zoneprinter
+        team: team1
+        version: v2
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: zoneprinter
+        team: team1
+        version: v2
+    spec:
+      containers:
+      - name: frontend
+        image: gcr.io/rramkumar-gke-dev/gcp-zoneprinter-amd64:0.2
+        args:
+        - --version=team1-v2
+        ports:
+        - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zoneprinter-v1
+  namespace: team2
+spec:
+  selector:
+    matchLabels:
+        app: zoneprinter
+        team: team2
+        version: v1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: zoneprinter
+        team: team2
+        version: v1
+    spec:
+      containers:
+      - name: frontend
+        image: gcr.io/rramkumar-gke-dev/gcp-zoneprinter-amd64:0.2
+        args:
+        - --version=team2-v1
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zoneprinter-v1
+  namespace: team1
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+     app: zoneprinter
+     team: team1
+     version: v1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zoneprinter-v2
+  namespace: team1
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+     app: zoneprinter
+     team: team1
+     version: v2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zoneprinter-v1
+  namespace: team2
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+     app: zoneprinter
+     team: team2
+     version: v1
