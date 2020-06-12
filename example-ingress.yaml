@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: ingress
-  namespace: istio-system
+  namespace: service-apis-demo
   annotations:
     kubernetes.io/ingress.class: istio
 spec:

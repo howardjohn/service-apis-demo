@@ -1,7 +1,13 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: service-apis-demo
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: httpbin
+  namespace: service-apis-demo
 spec:
   selector:
     matchLabels:
@@ -25,6 +31,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: httpbin
+  namespace: service-apis-demo
 spec:
   selector:
     app: httpbin

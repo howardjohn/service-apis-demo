@@ -11,4 +11,3 @@ resources:
 # Example of an Ingress, allowing us to call`/get -H "Host: ingress.local` to call httpbin
 - example-ingress.yaml
 
-namespace: istio-system

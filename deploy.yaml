@@ -37,28 +37,26 @@ spec:
       containers:
       - name: istio
         # Pinned to latest verified version, as this is changing rapidly
-        image: gcr.io/istio-testing/pilot:1.6-alpha.4214ab3cda249ea64b927adc687fb5bed844cbc2
+        image: registry:5000/pilot:1591999058
         imagePullPolicy: Always
         args:
         - discovery
         env:
         - name: PILOT_ENABLED_SERVICE_APIS
           value: "true"  # This will be enabled by default in the future
+        - name: VALIDATION_WEBHOOK_CONFIG_NAME
+          value: ""
+        - name: ENABLE_CA_SERVER
+          value: "false"
         volumeMounts:
-        - name: local-certs
-          mountPath: /var/run/secrets/istio-dns
+        - name: config-volume
+          mountPath: /etc/istio/config
       - name: proxy
-        image: gcr.io/istio-testing/proxyv2:1.6-alpha.4214ab3cda249ea64b927adc687fb5bed844cbc2
+        image: registry:5000/proxyv2:1591997562
         args:
         - proxy
         - router
         env:
-        - name: MESH_CONFIG
-          value: |-
-            defaultConfig:
-              discoveryAddress: localhost:15010
-        - name: CA_ADDR
-          value: localhost:15010
         - name: ISTIO_META_CLUSTER_ID
           value: Kubernetes
         - name: ISTIO_META_CONFIG_NAMESPACE
@@ -68,6 +66,8 @@ spec:
         volumeMounts:
         - mountPath: /etc/istio/pod
           name: podinfo
+        - name: config-volume
+          mountPath: /etc/istio/config
       volumes:
       - downwardAPI:
           items:
@@ -81,6 +81,9 @@ spec:
       - emptyDir:
           medium: Memory
         name: local-certs
+      - name: config-volume
+        configMap:
+          name: istio
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -95,16 +98,15 @@ metadata:
   namespace: istio-system
 rules:
 - apiGroups: [""]
-  resources: ["services", "nodes", "pods", "endpoints", "secrets"]
+  resources: ["services", "nodes", "pods", "endpoints", "secrets", "namespaces"]
   verbs: ["get", "list", "watch"]
 - apiGroups: [""]
-  # resources: ["istio-ca-secret"]
   resources: ["secrets"]
   verbs: ["create", "get", "watch", "list", "update", "delete"]
 - apiGroups: [""]
   resources: ["configmaps"]
   verbs: ["create", "update", "get", "list", "watch"]
-- apiGroups: ["networking.x.k8s.io"]
+- apiGroups: ["networking.x-k8s.io"]
   resources: ["*"]
   verbs: ["get", "list", "watch"]
 - apiGroups: ["networking.k8s.io"]
@@ -139,3 +141,15 @@ roleRef:
   kind: ClusterRole
   name: istio
   apiGroup: rbac.authorization.k8s.io
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: istio
+  namespace: istio-system
+data:
+  mesh: |-
+    enableAutoMtls: false
+    accessLogFile: /dev/stdout
+    defaultConfig:
+      discoveryAddress: localhost:15010
