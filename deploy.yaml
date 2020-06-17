@@ -39,7 +39,7 @@ spec:
       containers:
       - name: istio
         # Pinned to latest verified version, as this is changing rapidly
-        image: gcr.io/howardjohn-istio/pilot:1592005051
+        image: gcr.io/istio-testing/pilot:1.7-alpha.08dee05714d12fdadb6f158dc8813c60e5ae1aa0
         imagePullPolicy: Always
         args:
         - discovery
@@ -54,7 +54,7 @@ spec:
         - name: config-volume
           mountPath: /etc/istio/config
       - name: proxy
-        image: gcr.io/howardjohn-istio/proxyv2:1592005092
+        image: gcr.io/istio-testing/proxyv2:1.7-alpha.08dee05714d12fdadb6f158dc8813c60e5ae1aa0
         args:
         - proxy
         - router
