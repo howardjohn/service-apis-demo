@@ -70,6 +70,6 @@ curl -H "host: team1.example.com" http://$INGRESS_HOST:$INGRESS_PORT/ping
 # Team 1 with staging header goes to team1 v2
 curl -H "host: team1.example.com" -H "env: stage" http://$INGRESS_HOST:$INGRESS_PORT/ping
 # Team 1 with canary header goes to team1 v1 (80%) and team1 v2 (20%)
-curl -H "host: team1.example.com" -H "env: canary" http://$INGRESS_HOST:$INGRESS_PORT/ping
+for i in {0..10}; do curl -H "host: team1.example.com" -H "env: canary" http://$INGRESS_HOST:$INGRESS_PORT/ping; echo; done
 curl -H "host: team2.example.com" http://$INGRESS_HOST:$INGRESS_PORT/ping
 ```
