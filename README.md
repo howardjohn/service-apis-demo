@@ -10,7 +10,7 @@ An Ingress is also setup with similar routing rules.
 
 ```shell
 # Install Kubernetes API CRDs. These will not be installed by Istio
-kubectl apply -k 'github.com/kubernetes-sigs/service-apis/config/crd?ref=c8dc1033d3100839c102870dd8df559b89d5516f'
+kubectl apply -k 'github.com/kubernetes-sigs/service-apis/config/crd?ref=56154e7bfde5ebf1a04f45be7abdf983a11c6a32'
 # Deploy Istio
 kubectl apply -k 'github.com/howardjohn/service-apis-demo'
 # Wait for things to get started
@@ -65,7 +65,11 @@ kubectl wait --for=condition=Available deployment --all --timeout=120s -n team2
 
 Send a request:
 ```shell
+# Team 1 goes to team1 v1
 curl -H "host: team1.example.com" http://$INGRESS_HOST:$INGRESS_PORT/ping
+# Team 1 with staging header goes to team1 v2
 curl -H "host: team1.example.com" -H "env: stage" http://$INGRESS_HOST:$INGRESS_PORT/ping
+# Team 1 with canary header goes to team1 v1 (80%) and team1 v2 (20%)
+curl -H "host: team1.example.com" -H "env: canary" http://$INGRESS_HOST:$INGRESS_PORT/ping
 curl -H "host: team2.example.com" http://$INGRESS_HOST:$INGRESS_PORT/ping
 ```

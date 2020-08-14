@@ -23,7 +23,9 @@ spec:
     port: 80
     protocol: HTTP
     routes:
-      namespaceSelector: {}
+      resource: httproutes
+      routeNamespaces:
+        onlySameNamespace: false
       routeSelector:
         matchLabels:
           app: zoneprinter
@@ -31,69 +33,66 @@ spec:
 kind: HTTPRoute
 apiVersion: networking.x-k8s.io/v1alpha1
 metadata:
- name: http-route-team1
- namespace: team1
- labels:
-   app: zoneprinter
+  name: http-route-team1
+  namespace: team1
+  labels:
+    app: zoneprinter
 spec:
- hosts:
-   - hostname: team1.example.com
-     rules:
-       - match:
-           pathType: Prefix
-           path: /
-           headerType: Exact
-           header:
-             env: stage
-         action:
-           forwardTo:
-             targetRef:
-               name: zoneprinter-v2
-               resource: services
-               group: ""
-       - match:
-           pathType: Prefix
-           path: /
-         action:
-           forwardTo:
-             targetRef:
-               name: zoneprinter-v1
-               resource: services
-               group: ""
- default:
-   rules:
-     - action:
-         forwardTo:
-           targetRef:
-             name: zoneprinter-v1
-             resource: services
-             group: ""
+  hosts:
+  - hostnames: [team1.example.com]
+    rules:
+    - match:
+        pathMatchType: Prefix
+        path: /
+        headerMatchType: Exact
+        headers:
+          env: stage
+      action:
+        forwardTo:
+        - targetRef:
+            name: zoneprinter-v2
+            resource: services
+    - match:
+        pathMatchType: Prefix
+        path: /
+        headerMatchType: Exact
+        headers:
+          env: canary
+      action:
+        forwardTo:
+        - targetRef:
+            name: zoneprinter-v1
+            resource: services
+          weight: 80
+        - targetRef:
+            name: zoneprinter-v2
+            resource: services
+          weight: 20
+    - match:
+        pathMatchType: Prefix
+        path: /
+      action:
+        forwardTo:
+        - targetRef:
+            name: zoneprinter-v1
+            resource: services
 ---
 kind: HTTPRoute
 apiVersion: networking.x-k8s.io/v1alpha1
 metadata:
- name: http-route-team2
- namespace: team2
- labels:
-   app: zoneprinter
+  name: http-route-team2
+  namespace: team2
+  labels:
+    app: zoneprinter
 spec:
- hosts:
-   - hostname: team2.example.com
-     rules:
-       - match:
-           pathType: Prefix
-           path: /
-         action:
-           forwardTo:
-             targetRef:
-               name: zoneprinter-v1
-               resource: services
-               group: ""
- default:
-   rules:
-     - action:
-         forwardTo:
-           targetRef:
-             name: zoneprinter-v1
-             resource: services
-             group: ""
+  hosts:
+  - hostnames: [team2.example.com]
+    rules:
+      - match:
+          pathMatchType: Prefix
+          path: /
+        action:
+          forwardTo:
+          - targetRef:
+              name: zoneprinter-v1
+              resource: services
